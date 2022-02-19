@@ -1,0 +1,35 @@
+--- a/extensions/exchanges/hitbtc/exchange.js
++++ b/extensions/exchanges/hitbtc/exchange.js
+@@ -36,6 +36,8 @@ module.exports = function container (get, set, clear) {
+
+   var orders = {}
+
++  var limit = 10;
++
+   var exchange = {
+     name: 'hitbtc',
+     historyScan: 'forward',
+@@ -49,7 +51,7 @@ module.exports = function container (get, set, clear) {
+     getTrades: function (opts, cb) {
+       var func_args = [].slice.call(arguments)
+       var client = publicClient()
+-      client.fetchTrades(joinProduct(opts.product_id)).then(result => {
++      client.fetchTrades(joinProduct(opts.product_id), null, null, {sort: 'ASC', by: 'timestamp', from: opts.from, limit: limit}).then(result => {
+         var trades = result.map(function (trade) {
+           return {
+             trade_id: trade.id,
+@@ -60,8 +62,14 @@ module.exports = function container (get, set, clear) {
+           }
+         })
+         cb(null, trades)
++
++        // increment 50%
++        limit = Math.min(Math.ceil(limit * 1.5), 1000);
+       })
+         .catch(function (error) {
++          //decrement 70%
++          limit = Math.max(Math.floor(limit * 0.3), 1);
++
+           console.error('An error occurred', error)
+           return retry('getTrades', func_args)
+         })

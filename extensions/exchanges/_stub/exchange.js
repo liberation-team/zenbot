@@ -19,11 +19,11 @@ module.exports = function container (conf) {
   }
 
   theExchange.getMakerFee = function() {
-    return 0.1
+    return 0.09
   }
 
   theExchange.getTakerFee = function() {
-    return 0.1
+    return 0.09
   }
 
   theExchange.getProducts = function () {
